@@ -1,5 +1,5 @@
 <style lang="less">
-  @import './login.less';
+@import "./login.less";
 </style>
 
 <template>
@@ -41,5 +41,4 @@ export default {
 </script>
 
 <style>
-
 </style>

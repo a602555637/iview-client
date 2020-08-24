@@ -1,5 +1,4 @@
 import {
-  login,
   logout,
   getUserInfo,
   getMessage,
@@ -10,6 +9,7 @@ import {
   getUnreadCount
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
+import { login } from '@/api/login'
 
 export default {
   state: {
@@ -74,16 +74,20 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, { userName, password }) {
-      userName = userName.trim()
+    handleLogin ({ commit }, loginInfo) {
+      // userName = userName.trim()
       return new Promise((resolve, reject) => {
         login({
-          userName,
-          password
+          ...loginInfo
         }).then(res => {
           const data = res.data
-          commit('setToken', data.token)
-          resolve()
+          commit('setToken', res.token)
+          commit('setAvatar', data.pic)
+          commit('setUserName', data.name)
+          commit('setUserId', data._id)
+          commit('setAccess', data.roles)
+          commit('setHasGetInfo', true)
+          resolve(true)
         }).catch(err => {
           reject(err)
         })
@@ -111,10 +115,10 @@ export default {
         try {
           getUserInfo(state.token).then(res => {
             const data = res.data
-            commit('setAvatar', data.avatar)
+            commit('setAvatar', data.pic)
             commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', data.access)
+            commit('setUserId', data._id)
+            commit('setAccess', data.roles)
             commit('setHasGetInfo', true)
             resolve(data)
           }).catch(err => {

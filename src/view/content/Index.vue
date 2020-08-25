@@ -66,7 +66,12 @@ export default {
           title: '创建时间',
           key: 'created',
           width: 200,
-          align: 'center'
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h('span', dayjs(params.row.created).format('YYYY-MM-DD HH:mm:ss'))
+            ])
+          }
         },
         {
           title: '作者',
@@ -81,43 +86,43 @@ export default {
           title: '分类',
           key: 'catalog',
           width: 100,
-          align: center
+          align: 'center'
         },
         {
           title: '积分',
           key: 'fav',
           width: 100,
-          align: center
+          align: 'center'
         },
         {
           title: '标签',
           key: 'tags',
           width: 120,
-          align: center
+          align: 'center'
         },
         {
           title: '是否结束',
           key: 'isEnd',
           width: 100,
-          align: center
+          align: 'center'
         },
         {
           title: '阅读计数',
           key: 'resds',
           width: 100,
-          align: center
+          align: 'center'
         },
         {
           title: '回答计数',
           key: 'answer',
           width: 100,
-          align: center
+          align: 'center'
         },
         {
           title: '状态',
           key: 'status',
           width: 120,
-          align: center,
+          align: 'center',
           render: (h, params) => {
             return h('div', [
               h('Tag', {
@@ -136,7 +141,7 @@ export default {
           title: '是否置顶',
           key: 'isTop',
           width: 100,
-          align: center,
+          align: 'center',
           render: (h, params) => {
             h('Icon', {
               props: {
@@ -150,10 +155,10 @@ export default {
         {
           title: '设置',
           key: 'setting',
-          slot: 'avtion',
+          slot: 'action',
           fixed: 'right',
           width: 160,
-          align: center
+          align: 'center'
         },
         {
           title: 'Handle',

@@ -7,7 +7,6 @@ export default [
   // 一级菜单添加的路由 (hideInMenu hideInbread)
 
   // 内容管理
-  // 文章管理 标签： 热门 || 精华
   {
     path: '/content',
     name: 'article_management',
@@ -34,6 +33,27 @@ export default [
           title: '标签管理'
         },
         component: () => import('@/view/components/tables/tables.vue')
+      }
+    ]
+  },
+  // 文章管理 标签： 热门 || 精华
+  {
+    path: '/user',
+    name: 'user',
+    meta: {
+      icon: 'md-albums',
+      title: '文章管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'user_management',
+        meta: {
+          icon: 'ios-people',
+          title: '用户管理'
+        },
+        component: () => import('@/view/user/index.vue')
       }
     ]
   }

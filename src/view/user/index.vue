@@ -11,6 +11,7 @@
         @on-row-edit="handleRowEdit"
         @on-row-remove="handleRowRemove"
         @on-selection-change="handleSelect"
+        @searchEvent="handleSearch"
       >
         <template v-slot:table-header>
           <Button @click="handleAddUser" class="search-btn" type="primary"
@@ -44,16 +45,19 @@
     <edit-model
       :item="currentItem"
       :isShow="showEdit"
+      :roles="roles"
       @editEvent="handleItemEdit"
       @changeEvent="handleChangeEvent"
     />
     <add-model
       :isShow="showAdd"
+      :roles="roles"
       @editEvent="handleItemAdd"
       @changeEvent="handleAddChangeEvent"
     />
     <set-model
       :isShow="showSet"
+      :roles="roles"
       @editEvent="handleItemSet"
       @changeEvent="handleSetChangeEvent"
     />
@@ -66,7 +70,7 @@ import EditModel from './edit'
 import AddModel from './add'
 import SetModel from './batchSet'
 import dayjs from 'dayjs'
-import { getUserList, updateUserById, deleteUserById, addUser, updateUserBatchById } from '@/api/admin'
+import { getUserList, updateUserById, deleteUserById, addUser, updateUserBatchById, getRoleNames } from '@/api/admin'
 
 export default {
   name: 'user_management',
@@ -86,31 +90,58 @@ export default {
       total: 0,
       page: 0,
       limit: 10,
+      option: {},
+      roles: [],
       pageArr: [10, 20, 30, 100],
       columns: [
         {
           type: 'selection',
           width: 60,
-          align: 'center'
+          align: 'center',
+          hidden: true
         },
         {
-          title: '用户名',
+          title: '用户昵称',
           key: 'name',
-          minWidth: 140
+          minWidth: 140,
+          search: {
+            type: 'input'
+          }
         },
         {
           title: '登录名',
-          key: 'username'
+          key: 'username',
+          search: {
+            type: 'input'
+          }
         },
         {
           title: '角色',
           key: 'roles',
-          align: 'center'
+          align: 'center',
+          render: (h, params) => {
+            const roleNames = params.row.roles.map(o => this.roleNames[o]).join(',')
+            return h('div', [h('span', roleNames)])
+          },
+          search: {
+            type: 'select',
+            options: [
+              {
+                key: '管理员',
+                value: 'admin'
+              },
+              {
+                key: '超级管理员',
+                value: 'super_admin'
+              }
+            ]
+          }
         },
         {
           title: '积分',
           key: 'favs',
-          align: 'center'
+          align: 'center',
+          hidden: true
         },
         {
           title: '是否禁用',
@@ -120,6 +151,23 @@ export default {
             return h('div', [
               h('span', params.row.status === '0' ? '否' : '是')
             ])
+          },
+          search: {
+            type: 'radio',
+            options: [
+              {
+                key: '全部',
+                value: ''
+              },
+              {
+                key: '否',
+                value: '0'
+              },
+              {
+                key: '是',
+                value: '1'
+              }
+            ]
           }
         },
         {
@@ -128,6 +176,23 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h('div', [h('span', params.row.isVip === '0' ? '否' : '是')])
+          },
+          search: {
+            type: 'radio',
+            options: [
+              {
+                key: '全部',
+                value: ''
+              },
+              {
+                key: '否',
+                value: '0'
+              },
+              {
+                key: '是',
+                value: '1'
+              }
+            ]
           }
         },
         {
@@ -138,6 +203,9 @@ export default {
             return h('div', [
               h('span', dayjs(params.row.created).format('YYYY-MM-DD HH:mm:ss'))
             ])
+          },
+          search: {
+            type: 'date'
           }
         },
         {
@@ -146,17 +214,37 @@ export default {
           slot: 'action',
           fixed: 'right',
           width: 160,
-          align: 'center'
+          align: 'center',
+          hidden: true
         }
       ],
       tableData: [],
       selection: []
     }
   },
+  computed: {
+    roleNames () {
+      const tmp = {}
+      this.roles.forEach(item => {
+        tmp[item.role] = item.name
+      })
+      return tmp
+    }
+  },
   mounted () {
     this._getList()
+    this._getRoleNames()
   },
   methods: {
+    handleSearch (value) {
+      // 判断是否有新的查询内容的传递，把分页数据 = 0
+      if ((typeof this.option.search !== 'undefined' && value.search !== this.option.search) || this.option === {}) {
+        this.page = 1
+      } else {
+        this.option = value
+        this._getList()
+      }
+    },
     // 批量设置： vip， 禁言，角色
     handleSetBatch () {
       if (this.selection.length === 0) {
@@ -298,10 +386,16 @@ export default {
     _getList () {
       getUserList({
         page: this.page - 1,
-        limit: this.limit
+        limit: this.limit,
+        option: this.option
       }).then(res => {
         this.tableData = res.data
         this.total = res.total
+      })
+    },
+    _getRoleNames () {
+      getRoleNames().then(res => {
+        if (res.code === 200) this.roles = res.data
       })
     }
   }

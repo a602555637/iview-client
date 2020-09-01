@@ -12,7 +12,8 @@ export default [
     name: 'article_management',
     meta: {
       icon: 'logo-buffer',
-      title: '文章管理'
+      title: '文章管理',
+      notCache: true
     },
     component: Main,
     children: [
@@ -21,7 +22,8 @@ export default [
         name: 'content_management',
         meta: {
           icon: 'md-grid',
-          title: '内容管理'
+          title: '内容管理',
+          notCache: true
         },
         component: () => import('@/view/content/Index.vue')
       },
@@ -30,19 +32,22 @@ export default [
         name: 'tags_management',
         meta: {
           icon: 'md-grid',
-          title: '标签管理'
+          title: '标签管理',
+          notCache: true
         },
-        component: () => import('@/view/components/tables/tables.vue')
+        component: () => import('@/view/user/index.vue')
       }
     ]
   },
+
   // 文章管理 标签： 热门 || 精华
   {
     path: '/user',
     name: 'user',
     meta: {
       icon: 'md-albums',
-      title: '文章管理'
+      title: '文章管理',
+      notCache: true
     },
     component: Main,
     children: [
@@ -51,9 +56,58 @@ export default [
         name: 'user_management',
         meta: {
           icon: 'ios-people',
-          title: '用户管理'
+          title: '用户管理',
+          notCache: true
         },
         component: () => import('@/view/user/index.vue')
+      }
+    ]
+  },
+
+  // 菜单管理
+  {
+    path: '/menu',
+    name: 'menu',
+    meta: {
+      icon: 'md-settings',
+      title: '菜单管理',
+      notCache: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'menu_management',
+        meta: {
+          icon: 'ios-menu',
+          title: '用户管理',
+          notCache: true
+        },
+        component: () => import('@/view/menu/index.vue')
+      }
+    ]
+  },
+
+  // 权限管理
+  {
+    path: '/roles',
+    name: 'roles',
+    meta: {
+      icon: 'md-checkbox',
+      title: '权限管理',
+      notCache: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'roles_management',
+        meta: {
+          icon: 'md-key',
+          title: '角色权限',
+          notCache: true
+        },
+        component: () => import('@/view/roles/index.vue')
       }
     ]
   }

@@ -6,18 +6,14 @@
       @on-ok="ok"
       @on-cancel="cancel"
     >
-      <Form
-        :model="localItem"
-        :label-width="80"
-        ref="table"
-      >
+      <Form :model="localItem" :label-width="80" ref="table">
         <FormItem label="角色">
-          <Select v-model="roles" multiple>
+          <Select v-model="localItem.roles" multiple>
             <Option
               v-for="(item, index) in roles"
-              :key="'editTags-' + index"
-              :value="item.tagName"
-              >{{ item.tagName }}</Option
+              :key="'role-' + index"
+              :value="item.role"
+              >{{ item.name }}</Option
             >
           </Select>
         </FormItem>
@@ -52,11 +48,11 @@ export default {
       loading: true,
       showStatus: false,
       localIds: [],
-      roles: ['admin', 'super_admin', 'user'],
+      roles: [],
       localItem: {
         status: '',
         isVip: '',
-        roles: ['user']
+        roles: []
       }
     }
   },

@@ -28,6 +28,7 @@ export default {
       'getUserInfo'
     ]),
     handleSubmit (options) {
+      console.log('handleSubmit -> options', options)
       this.handleLogin(options).then(res => {
         if (res) {
           this.$router.push({

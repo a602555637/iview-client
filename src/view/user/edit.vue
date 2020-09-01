@@ -14,8 +14,18 @@
         <FormItem label="登录名">
           <Input v-model="localItem.username" placeholder="请输入用户名" prop="username" />
         </FormItem>
-        <FormItem label="密码">
+        <FormItem label="密码" prop="password">
           <Input v-model="localItem.password" placeholder="请输入密码" prop="password" />
+        </FormItem>
+        <FormItem label="角色" prop="roles">
+          <Select v-model="localItem.roles" multiple>
+            <Option
+              v-for="(item, index) in roles"
+              :key="'role-' + index"
+              :value="item.role"
+              >{{ item.name }}</Option
+            >
+          </Select>
         </FormItem>
         <FormItem label="是否禁用">
           <RadioGroup v-model="localItem.status">
@@ -76,6 +86,10 @@ export default {
     item: {
       type: Object,
       default: () => {}
+    },
+    roles: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -83,6 +97,7 @@ export default {
       loading: true,
       showStatus: false,
       localItem: {
+        roles: [],
         _id: '',
         name: '',
         username: '',
@@ -101,7 +116,9 @@ export default {
           { required: true, message: '请输入登录名', trigger: 'blur' },
           { type: 'string', message: '请检查邮箱格式', trigger: 'blur' },
           { validator: userNamePassCheck, trigger: 'blur' }
-
+        ],
+        role: [
+          { required: true, message: '请选择用户角色', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },

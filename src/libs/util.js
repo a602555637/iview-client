@@ -402,3 +402,101 @@ export const setTitle = (routeItem, vm) => {
   const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
   window.document.title = resTitle
 }
+
+/**
+ * 排序
+ */
+export const sortObj = (arr, property) => {
+  return arr.sort((m, n) => m[property] - n[property])
+}
+
+// 获取当前选中节点的父级节点（一级节点）
+export const getNode = (arr, node) => {
+  for (let i = 0; i < arr.length; i++) {
+    const currentNode = arr[i]
+    // 当前节点中是否有该节点
+    if (currentNode.nodeKey === node.nodeKey) {
+      if (!currentNode.parent) {
+        // 删除子节点的parent属性
+        deleteKey(currentNode, 'parent')
+        return currentNode
+      } else return true
+    } else {
+      // 子节点中是否有该节点, 递归查询
+      if (currentNode.children && currentNode.children.length > 0) {
+        currentNode.children.map(o => {
+          o.parent = currentNode
+        })
+        // 当前循环是否有该节点
+        if (getNode(currentNode.children, node)) {
+          deleteKey(currentNode, 'parent')
+          return currentNode
+        }
+      }
+    }
+  }
+}
+
+export const deleteKey = (node, property) => {
+  if (node.children && node.children.length > 0) {
+    node.children.forEach(item => {
+      delete item[property]
+      if (item.children && item.children > 0) deleteKey(item.children, property)
+    })
+  }
+  return node
+}
+
+export const modifyNode = (tree, nodes, property, flag) => {
+  for (let i = 0; i < tree.length; i++) {
+    const currentNode = tree[i]
+    if (nodes && nodes.length > 0) {
+      // 传递需要设置的节点(权限)
+      if (nodes.includes(currentNode._id)) {
+        const tmp = { ...currentNode }
+        tmp[property] = flag
+        tree.splice(i, 1, tmp)
+      }
+    } else {
+      // 无节点，无需要特别设置的节点权限，统一设置整个树形菜单
+      const tmp = { ...currentNode }
+      tmp[property] = flag
+      tree.splice(i, 1, tmp)
+    }
+    if (currentNode.children && currentNode.children.length > 0) {
+      modifyNode(currentNode.children, nodes, property, flag)
+    }
+    // _checked || _selected
+    if (currentNode.operations && currentNode.operations.length > 0) {
+      modifyNode(currentNode.operations, nodes, '_' + property, flag)
+    }
+  }
+  return tree
+}
+
+// arr 扁平化
+export const flatten = arr => {
+  while (arr.some(item => Array.isArray(item))) {
+    arr = [].concat(...arr)
+  }
+  return arr
+}
+
+export const getPropertyIds = (menu, properties) => {
+  const arr = []
+  menu.forEach(item => {
+    if (item.checked || item._checked) arr.push(item._id)
+    // 查询两个属性下面的节点信息，children =》children =》 operations
+    properties.forEach(property => {
+      if (item[property] && item[property].length > 0) {
+        arr.push(getPropertyIds(item[property], properties))
+        // for (let i = 0; i < item[property].length; i++) {
+        //   const tmp = item[property][i]
+        //   if (tmp.checked || tmp._checked) arr.push(tmp._id)
+        //   if (tmp[property] && tmp[property].length > 0) arr.push(getPropertyIds(item[property], properties))
+        // }
+      }
+    })
+  })
+  return flatten(arr)
+}

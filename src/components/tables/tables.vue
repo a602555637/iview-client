@@ -4,22 +4,21 @@
       v-if="searchable && searchPlace === 'top'"
       class="search-con search-con-top"
     >
-      <Select v-model="searchKey" class="search-col">
-        <Option
-          v-for="item in columns"
-          :value="item.key"
-          :key="`search-col-${item.key}`"
-          ><template v-if="item.key !== 'handle'">{{
-            item.title
-          }}</template></Option
-        >
+      <Select class="search-col" @on-select="handleSelect">
+        <template v-for="(item, index) in columns">
+          <Option
+            v-if="item.hidden"
+            :value="index"
+            :key="`search-col-${item.key}`"
+            >{{ item.title }}</Option
+          >
+        </template>
       </Select>
-      <Input
-        @on-change="handleClear"
-        clearable
-        placeholder="输入关键字搜索"
-        class="search-input"
-        v-model="searchValue"
+      <!-- 搜索 -->
+      <search
+        :value="searchValue"
+        :item="chooseItem"
+        @changeEvent="handleChangeInput"
       />
       <Button @click="handleSearch" class="search-btn" type="primary"
         ><Icon type="md-search" />&nbsp;&nbsp;搜索</Button
@@ -57,8 +56,17 @@
       <slot name="footer" slot="footer"></slot>
       <slot name="loading" slot="loading"></slot>
       <template slot-scope="{ row, index }" slot="action">
-        <Icon type="md-build" size="22" @click.stop="editRow(row, index)" style="margin-right: 5px;"></Icon>
-        <Icon type="md-trash" size="22" @click.stop="removeRow(row, index)"></Icon>
+        <Icon
+          type="md-build"
+          size="22"
+          @click.stop="editRow(row, index)"
+          style="margin-right: 5px;"
+        ></Icon>
+        <Icon
+          type="md-trash"
+          size="22"
+          @click.stop="removeRow(row, index)"
+        ></Icon>
       </template>
     </Table>
     <div
@@ -94,9 +102,13 @@
 <script>
 import TablesEdit from './edit.vue'
 import handleBtns from './handle-btns'
+import Search from './search'
 import './index.less'
 export default {
   name: 'Tables',
+  components: {
+    Search
+  },
   props: {
     value: {
       type: Array,
@@ -185,6 +197,9 @@ export default {
    */
   data () {
     return {
+      chooseItem: {
+        type: 'input'
+      },
       insideColumns: [],
       insideTableData: [],
       edittingCellId: '',
@@ -194,6 +209,14 @@ export default {
     }
   },
   methods: {
+    handleSelect (index) {
+      const idx = index.value
+      this.chooseItem = this.columns[idx].search
+      this.searchKey = this.columns[idx].key
+      this.searchValue = ['select', 'date'].includes(this.chooseItem.type)
+        ? []
+        : ''
+    },
     suportEdit (item, index) {
       item.render = (h, params) => {
         return h(TablesEdit, {
@@ -204,18 +227,18 @@ export default {
             editable: this.editable
           },
           on: {
-            input: (val) => {
+            input: val => {
               this.edittingText = val
             },
-            'on-start-edit': (params) => {
+            'on-start-edit': params => {
               this.edittingCellId = `editting-${params.index}-${params.column.key}`
               this.$emit('on-start-edit', params)
             },
-            'on-cancel-edit': (params) => {
+            'on-cancel-edit': params => {
               this.edittingCellId = ''
               this.$emit('on-cancel-edit', params)
             },
-            'on-save-edit': (params) => {
+            'on-save-edit': params => {
               this.value[params.row.initRowIndex][
                 params.column.key
               ] = this.edittingText
@@ -234,7 +257,7 @@ export default {
     surportHandle (item) {
       const options = item.options || []
       const insideBtns = []
-      options.forEach((item) => {
+      options.forEach(item => {
         if (handleBtns[item]) insideBtns.push(handleBtns[item])
       })
       const btns = item.button ? [].concat(insideBtns, item.button) : insideBtns
@@ -242,7 +265,7 @@ export default {
         params.tableData = this.value
         return h(
           'div',
-          btns.map((item) => item(h, params, this))
+          btns.map(item => item(h, params, this))
         )
       }
       return item
@@ -263,13 +286,20 @@ export default {
             ? this.columns[1].key
             : ''
     },
-    handleClear (e) {
-      if (e.target.value === '') this.insideTableData = this.value
-    },
     handleSearch () {
-      this.insideTableData = this.value.filter(
-        (item) => item[this.searchKey].indexOf(this.searchValue) > -1
-      )
+      // 传递到父级组件
+      this.$emit('searchEvent', {
+        item: this.searchKey,
+        search: this.searchValue
+      })
+    },
+    handleChangeInput (item) {
+      // if (this.chooseItem === 'input') {
+      //   this.searchValue = item.target.value
+      // } else {
+      //   this.searchValue = item
+      // }
+      this.searchValue = this.chooseItem === 'input' ? item.target.value : item
     },
     handleTableData () {
       this.insideTableData = this.value.map((item, index) => {

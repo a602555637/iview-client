@@ -32,7 +32,8 @@ export default {
   modalTitle: 'Modal Title',
   content: 'This is the modal box content.',
   buttonText: 'Show Modal',
-  'i18n-tip': 'Note: Only this page is multi-language, other pages do not add language content to the multi-language package.',
+  'i18n-tip':
+    'Note: Only this page is multi-language, other pages do not add language content to the multi-language package.',
   error_store_page: 'Error Collection',
   error_logger_page: 'Error Logger',
   query: 'Query',
@@ -46,5 +47,11 @@ export default {
   article_management: 'Article Management',
   content_management: 'Content Management',
   tags_management: 'Tags Management',
-  user_management: 'User Management'
+  user_management: 'User Management',
+  menu_management: 'Menu Management',
+  menu: 'Menu Setting',
+  roles_management: 'Roles Management',
+  roles: 'Roles',
+  'Menu Options': 'Menu Options',
+  resources: 'Resources'
 }

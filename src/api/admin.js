@@ -20,11 +20,33 @@ const checkUserName = username => axios.get('/admin/checkname?username=' + usern
 // 添加用户
 const addUser = data => axios.post('/admin/add-user', data)
 
+// 菜单操作
+const addMenu = (data) => axios.post('/admin/add-menu', data)
+const getMenu = () => axios.get('/admin/get-menu')
+const updateMenu = (data) => axios.post('/admin/update-menu', data)
+const deleteMenu = (data) => axios.post('/admin/delete-menu', data)
+
+// 角色权限
+const addRole = (data) => axios.post('/admin/add-role', data)
+const getRoles = () => axios.get('/admin/get-role')
+const getRoleNames = () => axios.get('/admin/get-role-names')
+const updateRole = (data) => axios.post('/admin/update-role', data)
+const deleteRole = (data) => axios.post('/admin/delete-role', data)
+
 export {
   getUserList,
   updateUserById,
   updateUserBatchById,
   deleteUserById,
   checkUserName,
-  addUser
+  addUser,
+  addMenu,
+  getMenu,
+  updateMenu,
+  deleteMenu,
+  addRole,
+  getRoles,
+  getRoleNames,
+  updateRole,
+  deleteRole
 }

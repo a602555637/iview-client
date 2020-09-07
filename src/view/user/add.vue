@@ -133,6 +133,11 @@ const mobileCheck = (rule, value, callback) => {
   reg ? callback() : callback(new Error('请检查手机格式'))
 }
 
+const rolesCheck = (rule, value, callback) => {
+  if (value.length === 0) callback(new Error('请选择用户角色'))
+  else callback()
+}
+
 export default {
   props: {
     isShow: {
@@ -189,6 +194,9 @@ export default {
               userNamePassCheck(rule, value, callback, this),
             trigger: 'blur'
           }
+        ],
+        roles: [
+          { validator: rolesCheck, trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
